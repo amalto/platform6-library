@@ -6,4 +6,4 @@ This section documents the installation and use of components that have been use
 
 ## List of the components
 
-- [Camel CouchDB](README.md)
+- [Camel CouchDB](./camel-couchdb/README.md)
