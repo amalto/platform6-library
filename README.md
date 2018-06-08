@@ -4,4 +4,4 @@
 
 ## Summary
 
-- [Route components](route-components/route-components.md)
+- [Route components](route-components/README.md)
