@@ -15,7 +15,7 @@ For more information: https://www.mvnrepository.com/.
 
 - `camel-couchdb-2.18.1.jar`
 - `gson-2.8.5.jar`
-- `lightcouch-0.2.0.jar` (Note:  You MUST use the attached lightcouch-0.2.25.jar with CouchDB 2.3 and above)
+- `lightcouch-0.2.0.jar` (Note:  You MUST use the attached lightcouch-0.2.5.jar with CouchDB 2.3 and above)
 
 2. Ensure you have access to an instance of CouchDB 2.1.1 or greater.
 You will be required to provide a username and password for this CouchDB instance together with it's IP address and port.
