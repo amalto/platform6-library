@@ -7,20 +7,22 @@ Some helpful links:
 
 ## Installation
 
-1. Download and copy the following files to `${B2BOX_DATA}/lib`.
+1. Download files from https://www.mvnrepository.com/ and copy the following files to `${B2BOX_DATA}/lib`.
 
-For more information: https://www.mvnrepository.com/.
-
-:warning: Platform 6 must be restarted to re-read files from this folder!
+<b>Note: Platform 6 must be restarted to re-read files from this folder!</b>
 
 - `camel-couchdb-2.18.1.jar`
 - `gson-2.8.5.jar`
-- `lightcouch-0.2.0.jar` (Note:  You MUST use the attached lightcouch-0.2.5.jar with CouchDB 2.3 and above)
+- `lightcouch-0.2.0.jar`
 
 2. Ensure you have access to an instance of CouchDB 2.1.1 or greater.
 You will be required to provide a username and password for this CouchDB instance together with it's IP address and port.
 
 > If both Platform 6 and CouchDB are running in the same Docker container engine, the container `id` will be the `hostname` of the instance __not__ `localhost` or `127.0.0.1`.
+
+:warning If you use CouchDB 2.3 or greater you must use <b>lightcouch-0.2.5.jar</b>
+
+:warning There is a problem with camel-couchdb-2.18.1 when the network connection to the couchDb server is unreliable or becomes temporarily disconnected. The component stops receiving events and requires a restart to correct!  We have released a temporary fix for this issue as <b>camel-couchdb-2.18.6-SNAPSHOT</b> 
 
 ## Examples
 
