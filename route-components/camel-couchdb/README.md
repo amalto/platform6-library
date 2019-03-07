@@ -9,11 +9,11 @@ Some helpful links:
 
 1. Download files from https://www.mvnrepository.com/ and copy the following files to `${B2BOX_DATA}/lib`.
 
-<b>Note: Platform 6 must be restarted to re-read files from this folder!</b>
-
 - `camel-couchdb-2.18.1.jar`
 - `gson-2.8.5.jar`
 - `lightcouch-0.2.0.jar`
+
+<b>Note: Platform 6 must be restarted to re-read files from this folder!</b>
 
 2. Ensure you have access to an instance of CouchDB 2.1.1 or greater.
 You will be required to provide a username and password for this CouchDB instance together with it's IP address and port.
@@ -22,7 +22,7 @@ You will be required to provide a username and password for this CouchDB instanc
 
 :warning: If you use CouchDB 2.3 or greater you must use <b>lightcouch-0.2.5.jar</b>
 
-:warning: There is a problem with camel-couchdb-2.18.1 when the network connection to the couchDb server is unreliable or becomes temporarily disconnected. The component stops receiving events and requires a restart to correct!  We have released a temporary fix for this issue as <b>camel-couchdb-2.18.6-SNAPSHOT</b> 
+:warning: There is a problem with camel-couchdb-2.18.1 when the network connection to the couchDb server is unreliable or becomes temporarily disconnected. The component stops receiving events and requires a restart to correct!  We have released a temporary fix for this issue as <b>camel-couchdb-2.18.6-SNAPSHOT.jar</b> 
 
 ## Examples
 
