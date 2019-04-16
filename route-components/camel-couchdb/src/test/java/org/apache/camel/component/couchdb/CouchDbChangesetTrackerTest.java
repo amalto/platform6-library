@@ -24,9 +24,12 @@ import org.junit.runner.RunWith;
 import org.lightcouch.Changes;
 import org.lightcouch.ChangesResult.Row;
 import org.lightcouch.CouchDbContext;
+import org.lightcouch.CouchDbException;
 import org.lightcouch.CouchDbInfo;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import javax.naming.NameNotFoundException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -126,4 +129,19 @@ public class CouchDbChangesetTrackerTest {
         verify(endpoint).createExchange("seq1", "id1", null, false);
         verify(processor).process(any(Exchange.class));
     }
+
+    @Test
+    public void testProcessorUnstable() throws Exception {
+        when(changes.hasNext()).thenThrow(CouchDbException.class).thenReturn(true, false);
+        when(client.context()).thenReturn(context);
+        when(context.serverVersion()).thenThrow(NameNotFoundException.class).thenReturn("0.0.0");
+        when(changes.next()).thenReturn(row1);
+        when(consumer.getProcessor()).thenReturn(processor);
+
+        tracker.run();
+
+        verify(endpoint).createExchange("seq1", "id1", null, false);
+        verify(processor).process(any(Exchange.class));
+    }
+
 }

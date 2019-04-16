@@ -54,51 +54,53 @@ public class CouchDbChangesetTracker implements Runnable {
                 .since(since).heartBeat(endpoint.getHeartbeat()).continuousChanges();
     }
 
-    @Override
     public void run() {
 
         String lastSequence = null;
 
-        while (!stopped) {
+        try {
+            while (!stopped) {
 
-            try {
-                while (changes.hasNext()) { // blocks until a feed is received
-                    ChangesResult.Row feed = changes.next();
-                    if (feed.isDeleted() && !endpoint.isDeletes()) {
-                        continue;
-                    }
-                    if (!feed.isDeleted() && !endpoint.isUpdates()) {
-                        continue;
+                try {
+                    while (changes.hasNext()) { // blocks until a feed is received
+                        ChangesResult.Row feed = changes.next();
+                        if (feed.isDeleted() && !endpoint.isDeletes()) {
+                            continue;
+                        }
+                        if (!feed.isDeleted() && !endpoint.isUpdates()) {
+                            continue;
+                        }
+
+                        lastSequence = feed.getSeq();
+                        JsonObject doc = feed.getDoc();
+
+                        Exchange exchange = endpoint.createExchange(lastSequence, feed.getId(), doc, feed.isDeleted());
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Created exchange [exchange={}, _id={}, seq={}", new Object[]{exchange, feed.getId(), lastSequence});
+                        }
+
+                        try {
+                            consumer.getProcessor().process(exchange);
+                        } catch (Exception e) {
+                            consumer.getExceptionHandler().handleException("Error processing exchange.", exchange, e);
+                        }
                     }
 
-                    lastSequence = feed.getSeq();
-                    JsonObject doc = feed.getDoc();
+                    stopped = true;
 
-                    Exchange exchange = endpoint.createExchange(lastSequence, feed.getId(), doc, feed.isDeleted());
-                    if (LOG.isTraceEnabled()) {
-                        LOG.trace("Created exchange [exchange={}, _id={}, seq={}", new Object[]{exchange, feed.getId(), lastSequence});
+                } catch (CouchDbException e) {
+                    if (LOG.isWarnEnabled()) {
+                        LOG.warn("CouchDb Exception encountered waiting for changes!  Attempting to recover...", e);
                     }
-
-                    try {
-                        consumer.getProcessor().process(exchange);
-                    } catch (Exception e) {
-                        consumer.getExceptionHandler().handleException("Error processing exchange.", exchange, e);
-                    }
+                    if (!waitForStability(lastSequence)) throw e;
                 }
-
-                stopped = true;
-
-            } catch (CouchDbException e) {
-                if (LOG.isWarnEnabled()) {
-                    LOG.warn("CouchDb Exception encountered waiting for changes!  Attempting to recover...", e);
-                }
-                if (!waitForStability()) throw e;
-                initChanges(lastSequence);
             }
+        } catch (Exception e) {
+            LOG.error("Unexpected error causing CouchDb change tracker to exit!",e);
         }
     }
 
-    private boolean waitForStability() {
+    private boolean waitForStability(final String lastSequence) {
 
         boolean problems = true;
         int repeatDbErrorCount = 0;
@@ -117,11 +119,15 @@ public class CouchDbChangesetTracker implements Runnable {
                 }
             }
             try {
+                // Fail fast operation
                 couchClient.context().serverVersion();
+                // reset change listener
+                initChanges(lastSequence);
                 problems = false;
+
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn("Failed to get CouchDb server version while awaiting connection stabilisation.  Attempt: " + repeatDbErrorCount, e);
+                    LOG.warn("Failed to get CouchDb server version and/or reset change listener!  Attempt: " + repeatDbErrorCount, e);
                 }
             }
         }
