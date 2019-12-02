@@ -9,7 +9,6 @@ try {
 
 camel.getCtx().addRoutes(new RouteBuilder() {
     def void configure() {
-        restConfiguration().component( 'p6rest' )
         ${addRoutes}
     }
 })
