@@ -28,7 +28,7 @@ You will be required to provide a username and password for this CouchDB instanc
 
 ```groovy
 from("couchdb:http://localhost:5984/test?username=user&password=password")
-  .to( "p6cmb://scripts?platform6.request.action=execute&platform6.request.user=couchdb&id=CouchEventHandler" )
+  .to( "p6cmb://scripts?platform6.request.action=execute&id=CouchEventHandler" )
   .routeId("myCouchdb2Route")
 ```
 This route will call the Platform 6 script `CouchEventHandler` each time an update or delete event occurs on the database called `test`.
